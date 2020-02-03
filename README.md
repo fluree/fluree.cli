@@ -13,9 +13,9 @@ Note that this tool is a beta-version. If you run into issues, you can send us a
 
 #### Using the CLI
 
-To download the latest version: `https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-latest.zip`
+To download the latest version: [https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-latest.zip](https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-latest.zip).
 
-To download a specific version: `https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-${VERSION}.zip`, for example `https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-0.1.0.zip`. 
+To download a specific version: `https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-${VERSION}.zip`, for example [https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-0.1.0.zip](https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-0.1.0.zip). 
 
 Simply put the `fluree_cli.jar` in the folder where your Fluree network is running, and issue `java -jar fluree_cli.jar` to run the CLI. 
 
