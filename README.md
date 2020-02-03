@@ -10,7 +10,15 @@
 Manipulating logs (for example, setting a new default private key) is only recommended when running Fluree in a centralized fashion (as a single server). Changing Raft logs in a decentralized network is not recommended unless you know what you are doing. If you are going to change logs, please reach out to us on Slack or via email if you need help. To change logs, make sure that you are NOT running a Fluree node when running this CLI. To use this CLI, shut down your Fluree node, start up the CLI, make any changes that you need to, and start up your node once again. 
 
 Note that this tool is a beta-version. If you run into issues, you can send us an email, support@flur.ee, or [join on our Slack channel](https://launchpass.com/flureedb).
- 
+
+#### Using the CLI
+
+To download the latest version: `https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-latest.zip`
+
+To download a specific version: `https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-${VERSION}.zip`, for example `https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-0.1.0.zip`. 
+
+Simply put the `fluree_cli.jar` in the folder where your Fluree network is running, and issue `java -jar fluree_cli.jar` to run the CLI. 
+
 #### Versions
 
 The Fluree CLI is designed to work with Fluree data from versions 0.11.X and higher. The CLI may work with previous versions, but this is not supported, and users should do this at their own risk (i.e. creating a copy of all files before experimenting with the CLI). 

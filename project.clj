@@ -1,8 +1,7 @@
-(defproject fluree.cli "0.1.0-SNAPSHOT"
+(defproject fluree.cli "0.1.0"
   :description "The Fluree Command Line Interface (CLI) is a terminal-based tool that allows users to read and verify Fluree ledger files and consensus logs."
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "https://github.com/fluree/fluree.cli"}
+  :url "https://github.com/fluree/fluree.cli"
+  :license "SEE LICENSE IN LICENSE"
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/data.avl "0.0.19"]
                  [cheshire "5.8.1"]

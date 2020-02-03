@@ -1,214 +1,341 @@
-THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE PUBLIC
-LICENSE ("AGREEMENT"). ANY USE, REPRODUCTION OR DISTRIBUTION OF THE PROGRAM
-CONSTITUTES RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT.
+Fluree Customer Agreement
 
-1. DEFINITIONS
+This Fluree DB Customer Agreement (this “Agreement”) contains the terms and
+conditions that govern your access to and use of all Fluree DB Product, and
+is an agreement between Fluree, P.B.C., a public benefit corporation formed
+under the laws of the State of Delaware (also referred to as “Fluree,” “we,”
+“us,” or “our”) and you or the entity you represent (“you” or “your”). This
+Agreement takes effect when you click an “I Accept” button or check box
+presented with these terms or, if earlier, when you download our free software
+(the “Effective Date”). You represent to us that you are lawfully able to enter
+into contracts (e.g., you are not a minor). If you are entering into this
+Agreement for an entity, such as the company you work for, you represent to us
+that you have legal authority to bind that entity.  Key terms are defined in
+Section 1.
 
-"Contribution" means:
+1.	Definitions
 
-a) in the case of the initial Contributor, the initial code and
-documentation distributed under this Agreement, and
+“Affiliate” means any legal entity that a party owns, that owns a party, or
+that is under common ownership with a party. “Ownership” means, for purposes
+of this definition, control of more than a 50% interest in an entity.
 
-b) in the case of each subsequent Contributor:
+“Confidential Information” means information a party designates as confidential
+or reasonably considers as confidential. This definition shall not include
+information that is (i) or becomes publicly available through no fault of the
+recipient, (ii) received from a third party without a duty of confidentiality,
+(iii) independently developed by the receiving party without breaching this
+Agreement; or (iv) rightfully known or lawfully in the possession of the
+receiving party prior to disclosure from the other party.
 
-i) changes to the Program, and
+“Customer Data” means all data, including all text, sound, software, or image
+files that are provided to us by, or on behalf of, you or your Affiliates
+through your use of the Services.
 
-ii) additions to the Program;
+“Documentation” means the instructions, specifications and information
+regarding the Software.
 
-where such changes and/or additions to the Program originate from and are
-distributed by that particular Contributor. A Contribution 'originates' from
-a Contributor if it was added to the Program by such Contributor itself or
-anyone acting on such Contributor's behalf. Contributions do not include
-additions to the Program which: (i) are separate modules of software
-distributed in conjunction with the Program under their own license
-agreement, and (ii) are not derivative works of the Program.
+“End User” means you or any person permitted by you to access the Services or
+otherwise use the Services.
 
-"Contributor" means any person or entity that distributes the Program.
+”Intellectual Property Rights” means any and all registered and unregistered
+rights granted, applied for or otherwise now or hereafter in existence under
+or related to any patent, copyright, trademark, trade secret, database
+protection or other intellectual property rights laws, and all similar or
+equivalent rights or forms of protection, in any part of the world.
 
-"Licensed Patents" mean patent claims licensable by a Contributor which are
-necessarily infringed by the use or sale of its Contribution alone or when
-combined with the Program.
+”Open-Source Components” means any software component that is subject to any
+open-source copyright license agreement, including any GNU general public
+license or GNU library or lesser public license, or other obligation,
+restriction or license agreement that substantially conforms to the Open
+Source Definition as prescribed by the Open Source Initiative or otherwise
+may require disclosure or licensing to any third party of any source code with
+which such software component is used or compiled.
 
-"Program" means the Contributions distributed in accordance with this
-Agreement.
+“Product” means any Fluree Services or Software.
 
-"Recipient" means anyone who receives the Program under this Agreement,
-including all Contributors.
+“Software” means any Fluree DB software either downloaded by you, or hosted by
+us, and any updates or modifications to such software, but excluding open
+source software components, each of which has its copyright notice and license
+included in the license file and Documentation.
 
-2. GRANT OF RIGHTS
+“Subscription Package” means an enrollment for use of any Product(s), which can
+be found at https://www.flur.ee/.
 
-a) Subject to the terms of this Agreement, each Contributor hereby grants
-Recipient a non-exclusive, worldwide, royalty-free copyright license to
-reproduce, prepare derivative works of, publicly display, publicly perform,
-distribute and sublicense the Contribution of such Contributor, if any, and
-such derivative works, in source code and object code form.
+“Third-Party Materials” means materials and information, in any form or medium,
+that are not proprietary to Fluree, including any third-party: (a) documents,
+data, content, consensus processes or specifications; (b) Open-Source Components
+or other software, hardware or other products, facilities, equipment or devices;
+and (c) accessories, components, parts or features of any of the foregoing.
 
-b) Subject to the terms of this Agreement, each Contributor hereby grants
-Recipient a non-exclusive, worldwide, royalty-free patent license under
-Licensed Patents to make, use, sell, offer to sell, import and otherwise
-transfer the Contribution of such Contributor, if any, in source code and
-object code form.  This patent license shall apply to the combination of the
-Contribution and the Program if, at the time the Contribution is added by the
-Contributor, such addition of the Contribution causes such combination to be
-covered by the Licensed Patents. The patent license shall not apply to any
-other combinations which include the Contribution. No hardware per se is
-licensed hereunder.
+2.	Software and Services
 
-c) Recipient understands that although each Contributor grants the licenses
-to its Contributions set forth herein, no assurances are provided by any
-Contributor that the Program does not infringe the patent or other
-intellectual property rights of any other entity. Each Contributor disclaims
-any liability to Recipient for claims brought by any other entity based on
-infringement of intellectual property rights or otherwise. As a condition to
-exercising the rights and licenses granted hereunder, each Recipient hereby
-assumes sole responsibility to secure any other intellectual property rights
-needed, if any. For example, if a third party patent license is required to
-allow Recipient to distribute the Program, it is Recipient's responsibility
-to acquire that license before distributing the Program.
+We will provide you, either through direct download or through a Fluree hosted
+account, with the Software and the Services in accordance with the Subscription
+Package you select.  Enterprise Subscription Packages may include additional
+Services whose terms and conditionals will be memorialized in a separate
+agreement.  Notwithstanding any provision in this Agreement to the contrary, in
+the event there is a term or condition in a separate Enterprise Subscription
+Package agreement that conflicts with the terms and conditions of this
+Agreement, the Enterprise Subscription Package agreement shall control.
 
-d) Each Contributor represents that to its knowledge it has sufficient
-copyright rights in its Contribution, if any, to grant the copyright license
-set forth in this Agreement.
+3.	License
 
-3. REQUIREMENTS
+We grant you the non-exclusive, non-sublicensable and non-transferable (except
+for your Affiliates), limited right to access and use the Services and to
+install and use the Software included with your Subscription Package. You may
+use the Software only in accordance with this Agreement. You control access by
+End Users, and you are responsible for their use of the Product in accordance
+with this agreement.  Neither you, your End-Users, or your Affiliates may do
+any of the following:
 
-A Contributor may choose to distribute the Program in object code form under
-its own license agreement, provided that:
+a.	modify, correct, adapt, translate, enhance or otherwise prepare derivative
+works or improvements of any Software;
+b.	reverse engineer, disassemble, decompile, decode or adapt the Software, or
+otherwise attempt to derive or gain access to the source code of the Software,
+in whole or in part;
+c.	bypass or breach any security device or protection used for or contained
+in the Software or Documentation;
+d.	remove, delete, efface, alter, obscure, translate, combine, supplement or
+otherwise change any trademarks, terms of the Documentation, warranties,
+disclaimers, or Intellectual Property Rights, proprietary rights or other
+symbols, notices, marks or serial numbers on or relating to any copy of the
+Software or Documentation;
+e.	use the Software in any manner or for any purpose that infringes,
+misappropriates or otherwise violates any Intellectual Property Right or other
+right of any Person, or that violates any applicable law;
+f.	use the Software in or in connection with the design, construction,
+maintenance, operation or use of any hazardous environments, systems or
+applications, any safety response systems or other safety-critical
+applications, or any other use or application in which the use or failure of
+the Software could lead to personal injury or severe physical or property
+damage; or
+g.	use (i) the Software or Documentation other than for the permitted use or
+in any manner or for any purpose or application not expressly permitted by
+this Agreement or (ii) any Open-Source Components in any manner or for any
+purpose or application not expressly permitted by the controlling open-source
+license.
 
-a) it complies with the terms and conditions of this Agreement; and
+4.	Pricing and Payment
 
-b) its license agreement:
+Payments are due and must be made in accordance with your Subscription Package.
 
-i) effectively disclaims on behalf of all Contributors all warranties and
-conditions, express and implied, including warranties or conditions of title
-and non-infringement, and implied warranties or conditions of merchantability
-and fitness for a particular purpose;
+5.	Taxes
 
-ii) effectively excludes on behalf of all Contributors all liability for
-damages, including direct, indirect, special, incidental and consequential
-damages, such as lost profits;
+Prices are exclusive of any taxes unless otherwise specified on the invoice as
+tax inclusive. You must pay any applicable value added, goods and services,
+sales, gross receipts, or other transaction taxes, fees, charges or surcharges,
+or any regulatory cost recovery surcharges or similar amounts that are owed
+under this agreement and which we are permitted to collect from you under
+applicable law. You will be responsible for any applicable stamp taxes and for
+all other taxes that you are legally obligated to pay including any taxes that
+arise on the distribution or provision of Products to your Affiliates. We will
+be responsible for all taxes based on our net income, gross receipts taxes
+imposed in lieu of taxes on income or profits, or taxes on our property
+ownership.
 
-iii) states that any provisions which differ from this Agreement are offered
-by that Contributor alone and not by any other party; and
+If any taxes are required to be withheld on payments you make to us, you may
+deduct such taxes from the amount owed to us and pay them to the appropriate
+taxing authority; provided, however, that you promptly secure and deliver an
+official receipt for those withholdings and other documents we reasonably
+request to claim a foreign tax credit or refund. You must ensure that any
+taxes withheld are minimized to the extent possible under applicable law.
 
-iv) states that source code for the Program is available from such
-Contributor, and informs licensees how to obtain it in a reasonable manner on
-or through a medium customarily used for software exchange.
+6.	Term and Termination
 
-When the Program is made available in source code form:
+This Agreement starts on the date that you subscribe to a Subscription
+Package, or you download our Software for a free trial, and continues until
+either party terminates this Agreement subject to the terms of this Section 6.
+Upon termination of this Agreement, you will remove the Software from all
+Servers.  During the term of this Agreement and one year following termination,
+we may inspect your records relating to your use of the Software or Services
+for the purposes of verifying compliance with this Agreement.
 
-a) it must be made available under this Agreement; and
+7.	Intellectual Property
 
-b) a copy of this Agreement must be included with each copy of the Program.
+Except for the licenses set forth in this Agreement, this Agreement does not
+transfer any right, title or interest in any Intellectual Property Right of
+either party to the other. If you choose to provide us with suggestions, ideas
+for improvement, recommendations or other feedback, we may use your feedback
+without any restriction or payment.
 
-Contributors may not remove or alter any copyright notices contained within
-the Program.
+8.	Confidentiality
 
-Each Contributor must identify itself as the originator of its Contribution,
-if any, in a manner that reasonably allows subsequent Recipients to identify
-the originator of the Contribution.
+The receiving party will use the disclosing party’s Confidential Information
+only in connection with this Agreement and protect the disclosing party’s
+Confidential Information by using the same degree of care used to protect its
+own confidential information, but not less than a reasonable degree of care.
+The receiving party will limit disclosure of the disclosing party’s
+Confidential Information to its and its Affiliates’ directors, officers,
+employees and contractors bound to confidentiality obligations at least as
+protective as the confidentiality provisions in this Agreement and who have
+a need to know the Confidential Information. The receiving party will not
+disclose the disclosing party’s Confidential Information to any other third
+party without the consent of the disclosing party. The receiving party may
+disclose Confidential Information pursuant to a compulsory governmental
+process, provided that the receiving party, if legally permitted, promptly
+notifies the disclosing party, so that the disclosing party may seek to make
+such disclosure subject to a protective order or other appropriate remedy.
+Each party will return or destroy the other party’s Confidential Information
+upon written request from the other party.
 
-4. COMMERCIAL DISTRIBUTION
+9.	Indemnification
 
-Commercial distributors of software may accept certain responsibilities with
-respect to end users, business partners and the like. While this license is
-intended to facilitate the commercial use of the Program, the Contributor who
-includes the Program in a commercial product offering should do so in a
-manner which does not create potential liability for other Contributors.
-Therefore, if a Contributor includes the Program in a commercial product
-offering, such Contributor ("Commercial Contributor") hereby agrees to defend
-and indemnify every other Contributor ("Indemnified Contributor") against any
-losses, damages and costs (collectively "Losses") arising from claims,
-lawsuits and other legal actions brought by a third party against the
-Indemnified Contributor to the extent caused by the acts or omissions of such
-Commercial Contributor in connection with its distribution of the Program in
-a commercial product offering.  The obligations in this section do not apply
-to any claims or Losses relating to any actual or alleged intellectual
-property infringement. In order to qualify, an Indemnified Contributor must:
-a) promptly notify the Commercial Contributor in writing of such claim, and
-b) allow the Commercial Contributor to control, and cooperate with the
-Commercial Contributor in, the defense and any related settlement
-negotiations. The Indemnified Contributor may participate in any such claim
-at its own expense.
+a.	Our Indemnification of You We shall indemnify you from and against any
+damages incurred by you arising out of or relating to any legal actions by a
+third party to the extent that such Losses arise from any allegation in such
+legal action that the Software, or any use of the Software, in accordance with
+this Agreement (including the Documentation) infringes any U.S. Intellectual
+Property Right. This obligation does not apply to action or damages associated
+with any allegation of or relating to any:
+i.	Open-Source Components or other Third-Party Materials;
+ii.	patent issued on a patent application published after this Agreement
+becomes effective;
+iii.	incorporation by the Software of, or combination, operation or use of
+the Software in or with, any technology (including any software, hardware,
+firmware, system or network) or service not provided by us or specified for
+your use in the Documentation;
+iv.	modification of the Software other than: (i) by us in connection with this
+Agreement; or (ii) with our express written authorization and in strict
+accordance with our written directions and specifications;
+v.	Failure by you to timely implement any maintenance release, modification,
+update or replacement of the Software made available to you by us;
+vi.	use of the Software after we give notice to you of such activities alleged
+or actual infringement, misappropriation or other violation of a third party’s
+rights;
+vii.	negligence, abuse, misapplication or misuse of the Software or
+Documentation by or on behalf of you, your representative or a third party;
+viii.	use of the Software or Documentation by or on behalf of you that is
+outside the purpose, scope or manner of use authorized by this Agreement or in
+any manner contrary to our instructions;
+ix.	events or circumstances outside of our commercially reasonable control
+(including any third-party hardware, software or system bugs, defects or
+malfunctions); or
+x.	any action or damages for which you are obligated to indemnify us pursuant
+to this Agreement.
+b.	Your Indemnification of Us You shall indemnify us and our Affiliates, and
+each of our respective officers, directors, employees, agents, subcontractors,
+successors and assigns (“our indemnities”) from and against any and all actions
+and damages incurred by us or our indemnities in connection with any action by
+a third party to the extent that such damages arise out of or relate to any
+allegation that you, the End-Users, or your Affiliates are or will be violating
+or misappropriating any third-party’s Intellectual Property Rights through any:
+i.	use or combination of the Software by or on behalf of you or any of your
+Affiliates or End-Users with any hardware, software, system, network, service
+or other matter whatsoever that is neither provided by us nor authorized by us
+in this Agreement and the Documentation; and
+ii.	information, materials or technology or other matter whatsoever directly
+or indirectly provided by you or directed by you to be installed, combined,
+integrated or used with, as part of, or in connection with the Software or
+Documentation;
+iii.	of or relating to facts that, if true, would constitute a breach by
+you of any representation, warranty, covenant or obligation under this
+Agreement;
+iv.	of or relating to negligence, abuse, misapplication, misuse or more
+culpable act or omission (including recklessness or willful misconduct) by or
+on behalf of you, your Affiliates or End-Users with respect to the Software or
+Documentation or otherwise in connection with this Agreement; or
+v.	of or relating to use of the Software or Documentation by or on behalf of
+you or any of your Affiliates or End-Users that is outside the purpose, scope
+or manner of use authorized by this Agreement or the Documentation, or in any
+manner contrary to our instructions.
+c.	Indemnification Procedure Each party will provide the other with prompt
+notice of any claim. A party’s failure to provide prompt notice to the other
+party relieves the party of its obligation to indemnify the other party only
+to the extent that the failure to provide notice materially prejudiced the
+party’s ability to defend the claim. The indemnifying party will have sole
+control of the defense of the claim, including any settlement. The indemnified
+party will provide the indemnifying party with reasonable cooperation in
+connection with the defense of the claim, and may participate in the defense at
+its own expense. This Section 9 sets forth each party’s exclusive remedy for
+any third party infringement claim.
+d.	Sole Remedy THIS SECTION 9 SETS FORTH YOUR SOLE REMEDIES AND OUR SOLE
+LIABILITY AND OBLIGATION FOR ANY ACTUAL, THREATENED OR ALLEGED CLAIMS THAT THIS
+AGREEMENT OR ANY SUBJECT MATTER HEREOF (INCLUDING THE SOFTWARE AND
+DOCUMENTATION) INFRINGES, MISAPPROPRIATES OR OTHERWISE VIOLATES ANY
+INTELLECTUAL PROPERTY RIGHTS OF ANY THIRD PARTY.
 
-For example, a Contributor might include the Program in a commercial product
-offering, Product X. That Contributor is then a Commercial Contributor. If
-that Commercial Contributor then makes performance claims, or offers
-warranties related to Product X, those performance claims and warranties are
-such Commercial Contributor's responsibility alone. Under this section, the
-Commercial Contributor would have to defend claims against the other
-Contributors related to those performance claims and warranties, and if a
-court requires any other Contributor to pay any damages as a result, the
-Commercial Contributor must pay those damages.
+10.	Warranties
 
-5. NO WARRANTY
+TO THE FULLEST EXTENT PERMITTED BY LAW, FLUREE AND ITS AFFILIATES, SUPPLIERS
+AND DISTRIBUTORS MAKE NO WARRANTIES, EITHER EXPRESS OR IMPLIED, ABOUT THE
+SOFTWARE OR SERVICES. THE SOFTWARE AND SERVICES ARE PROVIDED "AS IS." WE ALSO
+DISCLAIM ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+AND NON-INFRINGEMENT.  ALL OPEN-SOURCE COMPONENTS AND OTHER THIRD-PARTY
+MATERIALS ARE PROVIDED “AS IS” AND ANY REPRESENTATION OR WARRANTY OF OR
+CONCERNING ANY OF THEM IS STRICTLY BETWEEN YOU AND THE THIRD-PARTY OWNER OR
+DISTRIBUTOR OF SUCH OPEN-SOURCE COMPONENTS AND THIRD-PARTY MATERIALS.
 
-EXCEPT AS EXPRESSLY SET FORTH IN THIS AGREEMENT, THE PROGRAM IS PROVIDED ON
-AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER
-EXPRESS OR IMPLIED INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR
-CONDITIONS OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A
-PARTICULAR PURPOSE. Each Recipient is solely responsible for determining the
-appropriateness of using and distributing the Program and assumes all risks
-associated with its exercise of rights under this Agreement , including but
-not limited to the risks and costs of program errors, compliance with
-applicable laws, damage to or loss of data, programs or equipment, and
-unavailability or interruption of operations.
+11.	Limitation of Liability
 
-6. DISCLAIMER OF LIABILITY
+WE DON'T EXCLUDE OR LIMIT OUR LIABILITY TO YOU WHERE IT WOULD BE ILLEGAL TO DO
+SO—THIS INCLUDES ANY LIABILITY FOR FLUREE'S OR ITS AFFILIATES' FRAUD OR
+FRAUDULENT MISREPRESENTATION IN PROVIDING THE SOFTWARE OR SERVICES. IN
+COUNTRIES WHERE THE FOLLOWING TYPES OF EXCLUSIONS AREN'T ALLOWED, WE'RE
+RESPONSIBLE TO YOU ONLY FOR LOSSES AND DAMAGES THAT ARE A REASONABLY
+FORESEEABLE RESULT OF OUR FAILURE TO USE REASONABLE CARE AND SKILL OR OUR
+BREACH OF OUR CONTRACT WITH YOU. THIS PARAGRAPH DOESN'T AFFECT CONSUMER RIGHTS
+THAT CAN'T BE WAIVED OR LIMITED BY ANY CONTRACT OR AGREEMENT.
+IN COUNTRIES WHERE EXCLUSIONS OR LIMITATIONS OF LIABILITY ARE ALLOWED, FLUREE,
+ITS AFFILIATES, SUPPLIERS OR DISTRIBUTORS WON'T BE LIABLE FOR:
+i. ANY INDIRECT, SPECIAL, INCIDENTAL, PUNITIVE, EXEMPLARY OR CONSEQUENTIAL
+DAMAGES, OR
+ii. ANY LOSS OF USE, DATA, BUSINESS, OR PROFITS, REGARDLESS OF LEGAL THEORY.
+THESE EXCLUSIONS OR LIMITATIONS WILL APPLY REGARDLESS OF WHETHER OR NOT FLUREE
+OR ANY OF ITS AFFILIATES HAS BEEN WARNED OF THE POSSIBILITY OF SUCH DAMAGES.
+IF YOU USE THE SERVICES FOR ANY COMMERCIAL, BUSINESS OR RE-SALE PURPOSE,
+FLUREE, ITS AFFILIATES, SUPPLIERS OR DISTRIBUTORS WILL HAVE NO LIABILITY TO
+YOU FOR ANY LOSS OF PROFIT, LOSS OF BUSINESS, BUSINESS INTERRUPTION, OR LOSS
+OF BUSINESS OPPORTUNITY DUE TO USE OF THE PRODUCT(S) OR ANY OTHER OPEN-SOURCE
+COMPONENTS OR OTHER THIRD-PARTY MATERIALS. FLUREE AND ITS AFFILIATES AREN'T
+RESPONSIBLE FOR THE CONDUCT, WHETHER ONLINE OR OFFLINE, OF ANY USER OF THE
+SOFTWARE OR SERVICES.
+OTHER THAN FOR THE TYPES OF LIABILITY WE CANNOT LIMIT BY LAW (AS DESCRIBED IN
+THIS SECTION), WE LIMIT OUR LIABILITY TO YOU TO ANY AMOUNT YOU'VE PAID UNDER
+YOUR CURRENT SUBSCRIPTION PACKAGE WITH FLUREE.
 
-EXCEPT AS EXPRESSLY SET FORTH IN THIS AGREEMENT, NEITHER RECIPIENT NOR ANY
-CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING WITHOUT LIMITATION
-LOST PROFITS), HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OR DISTRIBUTION OF THE PROGRAM OR THE
-EXERCISE OF ANY RIGHTS GRANTED HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY
-OF SUCH DAMAGES.
+12.	Miscellaneous
 
-7. GENERAL
+a.	Relationship of the Parties. The relationship between the parties is that
+of independent contractors. Nothing contained in this Agreement shall be
+construed as creating any agency, partnership, joint venture or other form of
+joint enterprise, employment or fiduciary relationship between the parties,
+and neither party shall have authority to contract for or bind the other party
+in any manner whatsoever.
+b.	Notices. You must send notices by mail to the address below.
 
-If any provision of this Agreement is invalid or unenforceable under
-applicable law, it shall not affect the validity or enforceability of the
-remainder of the terms of this Agreement, and without further action by the
-parties hereto, such provision shall be reformed to the minimum extent
-necessary to make such provision valid and enforceable.
+NOTICES SHOULD BE SENT TO:
 
-If Recipient institutes patent litigation against any entity (including a
-cross-claim or counterclaim in a lawsuit) alleging that the Program itself
-(excluding combinations of the Program with other software or hardware)
-infringes such Recipient's patent(s), then such Recipient's rights granted
-under Section 2(b) shall terminate as of the date such litigation is filed.
+Fluree, P.B.C.
+486 Patterson Avenue, Suite 261
+Winston Salem, NC 27101
 
-All Recipient's rights under this Agreement shall terminate if it fails to
-comply with any of the material terms or conditions of this Agreement and
-does not cure such failure in a reasonable period of time after becoming
-aware of such noncompliance. If all Recipient's rights under this Agreement
-terminate, Recipient agrees to cease use and distribution of the Program as
-soon as reasonably practicable. However, Recipient's obligations under this
-Agreement and any licenses granted by Recipient relating to the Program shall
-continue and survive.
 
-Everyone is permitted to copy and distribute copies of this Agreement, but in
-order to avoid inconsistency the Agreement is copyrighted and may only be
-modified in the following manner. The Agreement Steward reserves the right to
-publish new versions (including revisions) of this Agreement from time to
-time. No one other than the Agreement Steward has the right to modify this
-Agreement. The Eclipse Foundation is the initial Agreement Steward. The
-Eclipse Foundation may assign the responsibility to serve as the Agreement
-Steward to a suitable separate entity. Each new version of the Agreement will
-be given a distinguishing version number. The Program (including
-Contributions) may always be distributed subject to the version of the
-Agreement under which it was received. In addition, after a new version of
-the Agreement is published, Contributor may elect to distribute the Program
-(including its Contributions) under the new version. Except as expressly
-stated in Sections 2(a) and 2(b) above, Recipient receives no rights or
-licenses to the intellectual property of any Contributor under this
-Agreement, whether expressly, by implication, estoppel or otherwise. All
-rights in the Program not expressly granted under this Agreement are
-reserved.
-
-This Agreement is governed by the laws of the State of New York and the
-intellectual property laws of the United States of America. No party to this
-Agreement will bring a legal action under this Agreement more than one year
-after the cause of action arose. Each party waives its rights to a jury trial
-in any resulting litigation.
+You agree to receive electronic notices from us, which will be sent by email to
+the account administrator you specify. Notices are effective on the date on the
+return receipt or, for email, when sent. You are responsible for ensuring that
+the account administrator email address that you specify is accurate and
+current, and you agree that any email notice that we send to such email address
+will be effective when sent, whether or not you actually receive the email.
+c.	Surviving Terms. The provisions set forth in the following sections, and
+any other right, obligation or provision under this Agreement that, by its
+nature, should survive termination or expiration of this Agreement, will
+survive any expiration or termination of this Agreement: Section 1
+(Definitions), Section 7 (Intellectual Property), Section 8 (Confidentiality),
+Section 9 (Indemnification), Section 10 ( Warranties), Section 11 (Limitations
+of Liability) and Section 12 (Miscellaneous).
+d.	Entire Agreement. This Agreement constitutes the entire agreement between
+you and Fluree with respect to the subject matter of this Agreement, and
+supersede and replace any other prior or contemporaneous agreements, or terms
+and conditions applicable to the subject matter of this Agreement. This
+Agreement creates no third party beneficiary rights.
+e.	Waiver, Severability & Assignment.  Fluree's failure to enforce a provision
+is not a waiver of its right to do so later. If a provision is found
+unenforceable, the remaining provisions of this Agreement will remain in full
+effect and an enforceable term will be substituted reflecting our intent as
+closely as possible. You may not assign any of your rights under this
+Agreement, and any such attempt will be void. Fluree may assign its rights to
+any of its affiliates or subsidiaries, or to any successor in interest of any
+business associated with the Services.
+f.	Amendment and Modification. No amendment to or modification of this
+Agreement is effective unless it is in writing and signed by an authorized
+representative of each Party.
