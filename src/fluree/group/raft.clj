@@ -286,22 +286,29 @@
   (try (snapshot-reify-fn latest-snapshot)
        (catch Exception e false)))
 
-(defn retrieve-latest-non-corrupt-snapshot
+(defn retrieve-latest-snapshot
   [snapshot-file-path snapshot-reify-fn]
-  (let [all-snapshots (->> (raft-log/all-log-indexes snapshot-file-path "snapshot") (sort >))]
-    (loop [[snapshot & r] all-snapshots]
-      (if-not snapshot
-        [nil false]
-        (let [reified (snapshot-reify-safe snapshot-reify-fn snapshot)]
-          (if (false? reified)
-            (recur r)
-            [snapshot reified]))))))
+  (let [last-snapshot (raft-log/latest-log-index snapshot-file-path "snapshot")
+        reified       (snapshot-reify-safe snapshot-reify-fn last-snapshot)]
+    (if reified
+      [last-snapshot reified]
+      (throw (ex-info (str "Unable to reify: " last-snapshot ".snapshot.
+      Please create a backup of your log directory, and then delete snapshots/" last-snapshot ".snapshot
+       Make sure that you know what your default private key is before you delete!")
+                      {:status 400
+                       :error  :db/invalid-snapshot})))))
 
 (defn commit-log-index-to-state
   [log-dir log-index state-machine]
   (let [log-file (io/file (str log-dir log-index ".raft"))
         entries  (try (raft-log/read-log-file log-file)
-                      (catch Exception e []))]
+                      (catch Exception e
+                        (throw (ex-info (str "Unable to read log file: " log-index ".raft.
+                        Please create a backup of your log directory, and then delete " log-index ".raft.
+                        Also, delete the snapshot at this point (in the snapshots/ folder).
+                        Make sure that you know what your default private key is before you delete!")
+                                        {:status 400
+                                         :error  :db/log-raft}))))]
     (loop [[entry & r] entries]
       (if-not entry
         true
@@ -325,7 +332,7 @@
   (let [log-dir           (:log-dir @config-atom)
         snapshot-dir      (str log-dir "snapshots/")
         snapshot-reify-fn (raft-kv/snapshot-reify snapshot-dir state-atom)
-        [last-snapshot _] (retrieve-latest-non-corrupt-snapshot snapshot-dir snapshot-reify-fn)
+        [last-snapshot _] (retrieve-latest-snapshot snapshot-dir snapshot-reify-fn)
         files-to-commit   (log-files-to-commit last-snapshot log-dir)
         state-machine     (state-machine-only state-atom)]
     (if (and (not last-snapshot) (empty? files-to-commit))
