@@ -1,4 +1,4 @@
-(defproject fluree.cli "0.1.0"
+(defproject fluree.cli "0.1.1"
   :description "The Fluree Command Line Interface (CLI) is a terminal-based tool that allows users to read and verify Fluree ledger files and consensus logs."
   :url "https://github.com/fluree/fluree.cli"
   :license "SEE LICENSE IN LICENSE"
