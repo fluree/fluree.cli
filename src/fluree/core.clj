@@ -4,7 +4,8 @@
             [fluree.group.raft :as raft]
             [fluree.util :as util]
             [cli4clj.cli :as cli]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [cheshire.core :as cjson])
   (:gen-class))
 
 (defn -main
@@ -12,6 +13,7 @@
   Just pass parameters and configuration.
   Commands (functions) will be invoked as appropriate."
   [& args]
+  (println "  ___ _                  \n | __| |_  _ _ _ ___ ___ \n | _|| | || | '_/ -_) -_)\n |_| |_|\\_,_|_| \\___\\___|\n                         ")
   (let [jvm-arguments   (-> (util/jvm-arguments) :input util/jvm-args->map)
         properties-file (or (:fdb-properties-file jvm-arguments) "fluree_sample.properties")
         props           (util/read-properties-file properties-file)
@@ -24,7 +26,7 @@
                          :this-server (:fdb-group-this-server props)}
         config-atom     (atom config-state)
         raft-state      (atom {:loaded false})]
-    (println "\n \n /$$$$$$$$/$$                                       \n| $$_____/ $$                                       \n| $$     | $$ /$$   /$$  /$$$$$$  /$$$$$$   /$$$$$$ \n| $$$$$  | $$| $$  | $$ /$$__  $$/$$__  $$ /$$__  $$\n| $$__/  | $$| $$  | $$| $$  \\__/ $$$$$$$$| $$$$$$$$\n| $$     | $$| $$  | $$| $$     | $$_____/| $$_____/\n| $$     | $$|  $$$$$$/| $$     |  $$$$$$$|  $$$$$$$\n|__/     |__/ \\______/ |__/      \\_______/ \\_______/\n                                                    \n                                                    \n                                                    ")
+
     (cli/start-cli {:cmds          {
                                     ;; CONFIG
                                     ;; Config is inferred from the fluree_sample.properties file.
@@ -62,7 +64,7 @@
                                                                                                       (str/join ", " (-> @raft-state :networks keys)))))
                                                                                     (throw (ex-info (str "Unknown command. Provided: " command)
                                                                                                     {:status 400
-                                                                                                     :error :db/invalid-command})))))
+                                                                                                     :error  :db/invalid-command})))))
                                                     :short-info      "View all networks."
                                                     :long-info       "No arguments. This commands returns all networks listed in the raft state."
                                                     :completion-hint "No args"}
@@ -78,45 +80,57 @@
                                     ;; LEDGER
                                     ;; The below commands primarily deal with reading the data directory
 
-                                    :block         {:fn              (fn [& args] (let [data-dir (str (util/format-path (:data-dir @config-atom)))
-                                                                                        [[nw lid] block] (if (util/ledger-name? (first args))
-                                                                                                           [(str/split (-> args first str) #"/")
-                                                                                                            (second args)]
-                                                                                                           [[(-> args first str) (-> args second str)]
-                                                                                                            (nth args 2)])
-                                                                                        meta?    (if (boolean? (last args))
-                                                                                                   args true)]
-                                                                                    (ledger/get-block data-dir nw lid block meta?)))
+                                    :block         {:fn              (fn [& args] (let [[data-dir ledger block meta opts] (util/parse-nw-lid-start-end-args (:data-dir @config-atom) args)
+                                                                                        meta? (if (boolean? meta)
+                                                                                                meta
+                                                                                                true)]
+                                                                                    (ledger/get-block data-dir ledger block meta? opts)))
                                                     :short-info      "View the flakes for a given block. Optionally exclude metadata."
-                                                    :long-info       "`block [NW/LEDGER or NW LEDGER] [BLOCK] [META?]`
+                                                    :long-info       "`block LEDGER BLOCK [META? - optional] [--data-dir=some/path/ - optional]`
                                                   View the flakes for a given block. Optionally exclude metadata. The `META?` flag is optional and defaults to true. "
                                                     :completion-hint "`For example, `block fluree/test 4 false`"}
-                                    :auth          {:fn              (fn [& args] (let [data-dir (str (util/format-path (:data-dir @config-atom)))
-                                                                                        [nw lid startBlock endBlock] (util/parse-nw-lid-start-end-args args)]
-                                                                                    (ledger/get-auth data-dir nw lid startBlock endBlock)))
+                                    :auth          {:fn              (fn [& args] (let [[data-dir ledger start-block end-block opts] (util/parse-nw-lid-start-end-args (:data-dir @config-atom) args)]
+                                                                                    (-> (ledger/get-auth data-dir ledger start-block end-block opts)
+                                                                                        (clojure.pprint/pprint))
+                                                                                    :done))
                                                     :short-info      "Returns the auth and authority for a given block or block range."
-                                                    :long-info       "`auth [NW/LEDGER or NW LEDGER] [START BLOCK] [END BLOCK - optional]
+                                                    :long-info       "`auth LEDGER [START-BLOCK - optional] [END-BLOCK - optional] [--data-dir=some/path/ - optional]
                                                   Returns the auth and authority for a given block or block range. Results returned as a map where the keys are the blocks, and the values are a map containing auth and authority."
-                                                    :completion-hint "`auth [NW/LEDGER or NW LEDGER] [START BLOCK] [END BLOCK - optional]`"}
+                                                    :completion-hint "`auth LEDGER [START-BLOCK - optional] [END-BLOCK - optional] [--data-dir=some/path/ - optional]`"}
 
-                                    :verify-blocks {:fn              (fn [& args] (let [data-dir (str (util/format-path (:data-dir @config-atom)))
-                                                                                        [nw lid startBlock endBlock] (util/parse-nw-lid-start-end-args args)]
-                                                                                    (ledger/verify-blocks data-dir nw lid startBlock endBlock)))
-                                                    :short-info      "Verify the hashes and signatures for a given range of blocks in a database."
-                                                    :long-info       "`verify-blocks [NW/LEDGER or NW LEDGER] [START BLOCK -  optional] [END BLOCK - optional]`
+                                    :verify-blocks {:fn              (fn [& args] (let [[data-dir ledger start-block end-block opts] (util/parse-nw-lid-start-end-args (:data-dir @config-atom) args)
+                                                                                        [report invalid-blocks] (ledger/verify-blocks data-dir ledger start-block end-block opts)]
+                                                                                    (clojure.pprint/pprint report)
+                                                                                    (if invalid-blocks
+                                                                                      (println (str "Invalid block(s) detected: " (pr-str invalid-blocks) "\n"
+                                                                                                                  "  - Invalid blocks are where :prevHashMatch? and/or :hashValid? are false."))
+                                                                                      (println "All blocks were valid."))
+                                                                                    :done))
+                                                    :short-info      "Verify the hashes and signatures for a given range of blocks in a ledger."
+                                                    :long-info       "`verify-blocks LEDGER [START-BLOCK - optional] [END-BLOCK - optional] [--data-dir=some/path/ - optional]`
                                                     If no blocks are provided, the command will verify all blocks. If a single block is provided, only that block will be verified. If submitting a range of blocks, the start and end block are included."
-                                                    :completion-hint "`verify-blocks [NW/LEDGER or NW LEDGER] [START BLOCK -  optional] [END BLOCK - optional]`"}}
+                                                    :completion-hint "`verify-blocks LEDGER [START-BLOCK - optional] [END-BLOCK - optional] [--data-dir=some/path/ - optional]`"}
+                                    :tx-report     {:fn              (fn [& args] (let [[data-dir ledger start-block end-block opts] (util/parse-nw-lid-start-end-args (:data-dir @config-atom) args)
+                                                                                        output-file (when (:output-file opts)
+                                                                                                      (if (str/ends-with? (:output-file opts) ".json")
+                                                                                                        (:output-file opts)
+                                                                                                        (str (:output-file opts) ".json")))
+                                                                                        [report warnings] (ledger/tx-report data-dir ledger start-block end-block opts)]
+                                                                                    (if warnings ;; print out warnings
+                                                                                      (do (println "Warnings were discovered while processing blocks at: " data-dir ledger "/block/")
+                                                                                          (doseq [warning warnings]
+                                                                                            (println warning "\n")))
+                                                                                      (println "No warnings found, everything looks good!"))
+                                                                                    (if output-file
+                                                                                      (spit output-file (cjson/encode report))
+                                                                                      (clojure.pprint/pprint report))
+                                                                                    :done))
+                                                    :short-info      "Creates a report of transaction details from block(s), optionally output to a JSON file."
+                                                    :long-info       "`tx-report LEDGER [START-BLOCK - optional] [END BLOCK - optional] [--data-dir=some/path/ - optional] [--output-file=myreport.json - optional]`
+                                                    If no blocks are provided, the command will extract blocks. If a single block is provided, only that block will be extracted. If submitting a range of blocks, the start and end block are included."
+                                                    :completion-hint "`tx-report LEDGER [START-BLOCK - optional] [END BLOCK - optional] [--data-dir=some/path/ - optional] [--output-file=myreport.json - optional]`"}}
                     :allow-eval    false
                     :prompt-string "fluree✶ "})))
 
-
-
-
-
-
-(comment
-  (ledger/get-auth "/Users/plogian/Downloads/fluree-cli-test/data/ledger/" "fluree" "test" "2" 4)
-
-  )
 
 

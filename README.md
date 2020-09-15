@@ -17,7 +17,7 @@ To download the latest version: [https://fluree-cli-releases-public.s3.amazonaws
 
 To download a specific version: `https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-${VERSION}.zip`, for example [https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-0.1.0.zip](https://fluree-cli-releases-public.s3.amazonaws.com/fluree_cli-0.1.0.zip). 
 
-Simply put the `fluree_cli.jar` in the folder where your Fluree network is running, and issue `java -jar fluree_cli.jar` to run the CLI. 
+Put the `fluree_cli.jar` in the folder where your Fluree network is running, and issue `java -jar fluree_cli.jar` to run the CLI. 
 
 #### Versions
 
@@ -59,11 +59,11 @@ To change the config, issue `command set`, which will prompt you to change the c
 
 This command allows you to view the flakes for a given block, and optionally exclude metadata. By default, metadata flakes are included. The template for this command is:
 
-`block [NW/LEDGER or NW LEDGER] [BLOCK] [META?]`
+`block LEDGER-NAME BLOCK [META? - optional]`
 
 For example:
 
-`block fluree/test 2 false`, which is equivalent to `block fluree test 2 false`. 
+`block fluree/test 2 false`. 
 
 This will return a map with the following keys: `block`, `t`, and `flakes`. 
 
@@ -71,7 +71,7 @@ This will return a map with the following keys: `block`, `t`, and `flakes`.
 
 This command returns the auth and authority subject ids for a given block or block range. The template for this command is:
 
-`auth [NW/LEDGER or NW LEDGER] [START BLOCK] [END BLOCK - optional]`
+`auth LEDGER-NAME [START BLOCK] [END BLOCK - optional]`
                                                                
 Results returned as a map where the keys are the blocks, and the values are a map containing `auth` and `authority`.
 
@@ -84,7 +84,7 @@ For example, the command `auth fluree/test 2 3` might return a map like:
 
 This command will verify the hashes and signatures for a given range of blocks in a database. The template for this command is:
 
-`verify-blocks [NW/LEDGER or NW LEDGER] [START BLOCK] [END BLOCK - optional]`
+`verify-blocks LEDGER-NAME [START BLOCK] [END BLOCK - optional]`
 
 If a single block is provided, only that block will be verified. If submitting a range of blocks, the start and end block are included. 
 
