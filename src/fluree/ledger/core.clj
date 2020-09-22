@@ -1,12 +1,13 @@
 (ns fluree.ledger.core
   (:require [fluree.ledger.flake :as flake]
             [fluree.ledger.constants :as constants]
-            [com.fluree/crypto :as crypto]
+            [fluree.crypto :as crypto]
             [abracad.avro :as avro]
             [clojure.java.io :as io]
             [cheshire.core :as cjson]
             [clojure.string :as str]
-            [fluree.util :as util])
+            [fluree.util :as util]
+            [clojure.set :as set])
   (:import (java.io ByteArrayOutputStream)
            (java.util UUID)
            (java.net URI)))
@@ -16,7 +17,6 @@
     {:type   :record
      :name   "BigInteger"
      :fields [{:name "val", :type :string}]}))
-
 
 (defn ->BigInteger
   [val]
@@ -75,7 +75,6 @@
                  {:name "t", :type :long}
                  {:name "flakes", :type {:type  :array
                                          :items "fluree.Flake"}}]}))
-
 
 
 (def ^:const bindings {'fluree/Flake #'flake/->Flake
@@ -216,15 +215,6 @@
                                                          :hash           hash
                                                          :signingAuth    auth-id})))))))))
 
-(comment
-
-  (verify-blocks "/Users/bplatz/tmp/ledgera1/ledger/"
-                 "fabric/mvp4"
-                 4 nil nil)
-
-  (crypto/account-id-from-message "{\"type\":\"tx\",\"db\":\"fabric/mvp4\",\"tx\":[{\"_id\":\"user\",\"wallet\":{\"_id\":\"wallet\",\"name\":\"adminWallet\",\"balance\":10,\"earnings\":10},\"adminAuth\":\"_auth$1\",\"firstName\":\"Admin\",\"lastName\":\"Account\",\"profilePic\":\"initialData/users/5.jpg\",\"handle\":\"admin\",\"registered\":true,\"shoppingInterests\":[[\"category/descriptiveName\",\"clothing.mens\"],[\"category/descriptiveName\",\"clothing.mens.casual\"],[\"category/descriptiveName\",\"travel\"]]},{\"_id\":\"_auth$1\",\"id\":\"TfCywfruQaPvZcTWhCsnYHRASHfM3VF6PhB\",\"roles\":[\"_role$1\"]},{\"_id\":\"_role$1\",\"id\":\"Admin\",\"doc\":\"Fabric Admin Role\",\"rules\":[[\"_rule/id\",\"root\"]]}],\"nonce\":1566399776721,\"auth\":\"Tf39wv7cz29KpXDRMxSgn3KGCWXB3PrKgw6\",\"expire\":1566399806723}"
-                                  "1b30440220032737c99c72dda109d6373f4f80c01358a1e1a76b023398b8b0120b5ad0349c022062d8a0f2b5bfbd43b323ac4a67dda32b7c098f0a7bc97e15be4f039617086534")
-  )
 
 (defn- range-gap
   "Determines if a set of integers are continuous, and if a gap exists
@@ -246,10 +236,13 @@
         txid        (some #(when (= (.-p %) constants/$_tx:id) (.-o %)) tx-flakes)
         tx-error    (some #(when (= (.-p %) constants/$_tx:error) (.-o %)) tx-flakes)
         txid-calc   (when cmd (crypto/sha3-256 cmd))
-        txid-match? (and txid (= txid txid-calc))
-        warnings    (when (and (not txid-match?) (not= 1 block)) ;; genesis block doesn't have a command to calc from
-                      [(str "Block " block " has an inconsistent txid for t: " t "."
-                            " _tx/id recorded as: " txid " but calculated as: " txid-calc ".")])
+        txid-match? (= txid txid-calc)
+        warnings    (when (and (not txid-match?)
+                               (not= 1 block)               ;; genesis block doesn't have a command to calc from
+                               (not tx-error))              ;; we did not record a txid for errors in older versions
+                      (cond-> (str "Block " block " has an inconsistent txid for t: " t "."
+                                   " _tx/id recorded as: " txid " but calculated as: " txid-calc ".")
+                              tx-error (str "\n   - This tx was an error: " tx-error)))
         expire      (some-> cmd cjson/decode (get "expire"))]
     (util/without-nils
       {:t        t
@@ -257,21 +250,18 @@
        :expire   expire
        :expire-t (when expire (str (java.time.Instant/ofEpochMilli expire)))
        :tx-error tx-error
-       :warnings (not-empty warnings)
+       :warnings warnings
        :cmd      cmd})))
 
 
 (defn tx-report
-  "Valid opts include:
-   --output-file=myfile.json - outputs relative to directory cli run in, or use absolute path"
   [data-dir ledger startBlock endBlock opts]
-  (let [blocks      (get-block-range data-dir ledger startBlock endBlock)]
+  (let [blocks (get-block-range data-dir ledger startBlock endBlock)]
     (loop [[block & r] blocks
-           expected-t   nil                                 ;; expected first t value of block
-           all-warnings []
-           reports      (sorted-map)]
+           expected-t nil                                   ;; expected first t value of block
+           reports    (sorted-map)]
       (if-not block
-        [reports (not-empty all-warnings)]
+        reports
         (let [[block-data checksum] (read-block+hash data-dir ledger block)
               flakes       (:flakes block-data)
               tx-map       (->> flakes                      ;; group all tx flakes by t
@@ -306,64 +296,60 @@
                               :warnings  (not-empty warnings)
                               :checksum  checksum           ;; sha-256 hash of file bytes
                               })]
-          (recur r (dec block-t) (concat all-warnings warnings) (assoc reports block report)))))))
+          (recur r (dec block-t) (assoc reports block report)))))))
 
 
-(comment
+(defn ledger-compare
+  "Produces a map of blocks to found issues across multiple ledger server directories to find inconsistencies
+  or issues.
 
-  (tx-report "/Users/bplatz/tmp/ledgera1/ledger/"
-             "fabric"
-             "mvp4"
-             10 nil
-             {:output-file "ledgera1.json"})
-  (tx-report "/Users/bplatz/tmp/ledgerc1/ledger/"
-             "fabric"
-             "mvp4"
-             1 1716
-             {:output-file "ledgerc1.json"})
-  (tx-report "/Users/bplatz/tmp/ledgerd1/ledger/"
-             "fabric"
-             "mvp4"
-             1 1716
-             {:output-file "ledgerd1.json"})
+  Checks for the following issues (for now):
+  -- 't' value continuity (via tx-report)
+  -- blocks that are missing in any of the data-dirs
+  -- checksum comparison of block files, inconsistencies noted
+
+  data-dirs is a list of valid data directories (directories should all have a trailing '/')"
+  [ledger data-dirs opts]
+  (let [dirs             (into #{} data-dirs)
+        {:keys [start end]} opts
+        reports          (reduce (fn [acc data-dir]         ;; map of each ledger directory (key) to ledger report and other info
+                                   (let [report (tx-report data-dir ledger start end nil)]
+                                     ;; want our output format to be by block, not by directory
+                                     (reduce-kv (fn [acc* block data]
+                                                  (assoc-in acc* [block data-dir] data)) acc report))) {} data-dirs)
+        ;; helper fn that only returns a warnings from a block's aggregated report
+        extract-warnings (fn [data-dirs] (->> data-dirs
+                                              (reduce-kv (fn [acc data-dir data]
+                                                           (if-let [warning (:warnings data)]
+                                                             (assoc acc data-dir warning)
+                                                             acc))
+                                                         {})
+                                              (not-empty)))
+        ;; pull out any warnings from the tx-reports
+        report-warnings  (->> reports
+                              (keep (fn [[block data-dirs]]
+                                      (when-let [warnings (extract-warnings data-dirs)]
+                                        [block {:warnings warnings}])))
+                              (into (sorted-map)))
+        ;; add inconsistencies from the reports to the report-warnings
+        output           (reduce-kv (fn [acc block block-dirs]
+                                      (let [missing-blocks  (set/difference dirs (into #{} (keys block-dirs))) ;; identify any missing blocks
+                                            ;; checksums map of {"data/directory" "checksum value"}
+                                            checksums       (reduce-kv (fn [acc block-dir data]
+                                                                         (assoc acc block-dir (:checksum data))) {} block-dirs)
+                                            checksum-error? (apply not= (vals checksums))]
+                                        (cond-> acc
+
+                                                (not-empty missing-blocks)
+                                                (assoc-in [block :missing-in] missing-blocks)
+
+                                                checksum-error?
+                                                (assoc-in [block :checksum-error] checksums))))
+                                    report-warnings reports)]
+
+    output))
 
 
-
-  (-> (slurp "ledgera1.json")
-      (cjson/decode true)
-      )
-
-  (get-block "/Users/bplatz/tmp/ledgerc1/ledger/" "fdbaas/master" 771 true)
-
-  (let [a1   (-> (slurp "ledgera1.json")
-                 (cjson/decode true))
-        c1   (-> (slurp "ledgerc1.json")
-                 (cjson/decode true))
-        d1   (-> (slurp "ledgerd1.json")
-                 (cjson/decode true))
-        a-tx (into #{} (->> a1 (mapcat :txs) (map :txid)))
-        c-tx (into #{} (->> c1 (mapcat :txs) (map :txid)))
-        d-tx (into #{} (->> d1 (mapcat :txs) (map :txid)))]
-    #_(mapv (fn [a c d]
-              (let [{a-block :block a-instant-t :instant-t a-txid :txid a-expire-t :expire-t} a
-                    {c-block :block c-instant-t :instant-t c-txid :txid c-expire-t :expire-t} c
-                    {d-block :block d-instant-t :instant-t d-txid :txid d-expire-t :expire-t} d]
-
-                (when (not= a-txid c-txid)
-                  (println "a != c @" a-block c-block a-instant-t c-instant-t a-txid c-txid a-expire-t c-expire-t))
-                (when (not= a-txid d-txid)
-                  (println "a != d @" a-block d-block a-instant-t d-instant-t a-txid d-txid a-expire-t d-expire-t))
-                (when (not= c-txid d-txid)
-                  (println "c != d @" c-block d-block c-instant-t d-instant-t c-txid d-txid c-expire-t d-expire-t)))
-              )
-            a1 c1 d1)
-    (println "Tx only in a: " (clojure.set/difference a-tx c-tx d-tx))
-    (println "Tx only in c: " (clojure.set/difference c-tx a-tx d-tx))
-    (println "Tx only in d: " (clojure.set/difference d-tx a-tx c-tx))
-    :done
-    )
-
-  )
 
 
 

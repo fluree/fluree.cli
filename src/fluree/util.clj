@@ -97,15 +97,23 @@
 
   Returned args are untouched with the exception of extracting any options, if applicable."
   [args]
-  (let [[opts args*] ((juxt filter remove) #(str/starts-with? % "--") args)
+  (let [[opts args*] (->> args
+                          (map str)                         ;; input type of some args is symbol
+                          ((juxt filter remove) #(str/starts-with? % "--")))
         opts-map (reduce (fn [acc opt]
                            (let [[k v] (str/split opt #"=")
-                                 k* (keyword (str/replace k #"^--" ""))]
-                             (assoc acc k* v))) {} opts)]
+                                 k* (keyword (str/replace k #"^--" ""))
+                                 v* (cond
+                                      ;; if :output-file, ensure file name has '.json' appended
+                                      (= :output-file k*)
+                                      (if (str/ends-with? v ".json") v (str v ".json"))
+
+                                      ;; if an integer, try to parse
+                                      :else
+                                      (try (Integer/parseInt v) ;; parse to integer if possible
+                                           (catch Exception _ v)))]
+                             (assoc acc k* v*))) {} opts)]
     [opts-map args*]))
-
-
-
 
 (defn get-input
   [varname value]
@@ -130,10 +138,27 @@
                (str "Invalid ledger provided. Expected `ledger-network/ledger-id`. Provided: "
                     (str/join " " args))
                {:status 400
-                :error  :db/invalid-command})))
+                :error  :db/invalid-arguments})))
     (when-not data-dir*
       (throw (ex-info
                "No ledger data-dir provided. Either use optional `--data-dir=/path/to/ledger/files` or command `config set` to set default dir."
                {:status 400
-                :error  :db/invalid-command})))
+                :error  :db/invalid-arguments})))
     [data-dir* ledger start-block end-block-or-meta opts]))
+
+(defn parse-ledger-compare-args
+  [args]
+  (let [[opts args*] (parse-opts args)
+        [ledger & data-dirs] args*
+        data-dirs* (map format-path data-dirs)]
+    (when (= 1 (count data-dirs*))
+      (throw (ex-info "data-dirs argument must be a list of data directories separated by commas with no spaces."
+                      {:status :400
+                       :error  :db/invalid-arguments})))
+    (when-not (ledger-name? ledger)
+      (throw (ex-info
+               (str "Invalid ledger provided. Expected `ledger-network/ledger-id`. Provided: "
+                    (str/join " " args))
+               {:status 400
+                :error  :db/invalid-arguments})))
+    [ledger data-dirs* opts]))
