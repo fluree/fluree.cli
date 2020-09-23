@@ -95,17 +95,11 @@
       nil)
     (catch Exception e (throw e))))
 
-
 (defn deserialize-block
   [file-path]
   (binding [avro/*avro-readers* bindings]
     (avro/decode FdbBlock-schema
                  (read-file (io/file file-path)))))
-
-
-(defn ledger-block-path
-  [network ledger-id block]
-  (str network "/" ledger-id "/block/" (format "%015d" block) ".fdbd"))
 
 (defn ledger-block-path*
   [ledger block]
@@ -130,6 +124,25 @@
                       {:status 500
                        :error  :db/invalid-ledger})))
     (apply max blocks)))
+
+(defn- get-all-directories
+  "Returns list of java.io.File objects of all direct (non-recursive) directories
+  located at provided path."
+  [path]
+  (filter #(.isDirectory %) (.listFiles (io/file path))))
+
+(defn glob-match-ledgers
+  "Given a ledger data directory and a ledger match pattern, returns list of matching ledgers."
+  [data-dir ledger-match-glob]
+  (let [matches-glob     (fn [s] (re-matches (util/glob->regex ledger-match-glob) s))
+        ledger-from-path (fn [s] (second (re-find #".+/([^/]+/[^/]+)$" s))) ;; matches just the last */* from full path
+        network-dirs     (get-all-directories data-dir)]
+    (->> (mapcat get-all-directories network-dirs)          ;; get direct directories of network directories
+         (map str)                                          ;; string full path names
+         (map ledger-from-path)                             ;; pull out just the ledger name (i.e. some/ledger )
+         (filter matches-glob)                              ;; only glob matches
+         )))
+
 
 (defn- get-block-range
   "Given a start-block and end-block which are both option, returns a valid block range
@@ -262,12 +275,13 @@
            reports    (sorted-map)]
       (if-not block
         reports
-        (let [[block-data checksum] (read-block+hash data-dir ledger block)
+        (let [[block-data checksum] (try (read-block+hash data-dir ledger block)
+                                         (catch Exception _ nil)) ;; doesn't exist or decoding error
               flakes       (:flakes block-data)
               tx-map       (->> flakes                      ;; group all tx flakes by t
                                 (filter #(< (.-s %) 0))     ;; all subject-ids < 0
                                 (group-by #(.-s %)))
-              t-list       (sort > (keys tx-map))
+              t-list       (not-empty (sort > (keys tx-map)))
               block-t      (last t-list)
               block-flakes (get tx-map block-t)             ;; the last 't' value should be the block meta
               block-n      (some #(when (= (.-p %) constants/$_block:number) (.-o %)) block-flakes)
@@ -277,29 +291,34 @@
                                 (reduce (fn [acc t-flakes]
                                           (conj acc (tx-item-report block t-flakes))) []))
               warnings     (cond-> (keep :warnings tx-reports) ;; get any warnings from within individual txs
+                                   ;; block data file not there or could not decode
+                                   (nil? block-data)
+                                   (conj (str "Block " block " is either missing or cannot be decoded."))
+
                                    ;; gap in 't' values for this block
-                                   (and expected-t (not= expected-t (first t-list)))
+                                   (and block-data expected-t (not= expected-t (first t-list)))
                                    (conj (str "Block " block " has a gap in 't' values. "
                                               "Expected block to start with t: " expected-t
                                               " but instead started with: " (first t-list) "."))
                                    ;; missing 't' inside the block
-                                   (range-gap t-list)
-                                   (str "Block " block " is has a missing t value of: " (range-gap t-list) "."))
+                                   (and t-list (range-gap t-list))
+                                   (conj (str "Block " block " is has a missing t value of: " (range-gap t-list) ".")))
               report       (util/without-nils
                              {:file      (str data-dir (ledger-block-path* ledger block)) ;; output path of file we read
                               :block     block-n
                               :block-t   block-t
                               :instant   instant
-                              :instant-t (str (java.time.Instant/ofEpochMilli instant))
-                              :tx-count  (count tx-reports)
+                              :instant-t (when instant (str (java.time.Instant/ofEpochMilli instant)))
+                              :tx-count  (when tx-reports (count tx-reports))
                               :txs       tx-reports
                               :warnings  (not-empty warnings)
                               :checksum  checksum           ;; sha-256 hash of file bytes
-                              })]
-          (recur r (dec block-t) (assoc reports block report)))))))
+                              })
+              next-t       (when block-t (dec block-t))]
+          (recur r next-t (assoc reports block report)))))))
 
 
-(defn ledger-compare
+(defn ledger-compare*
   "Produces a map of blocks to found issues across multiple ledger server directories to find inconsistencies
   or issues.
 
@@ -349,7 +368,20 @@
 
     output))
 
+(defn ledger-compare
+  "If a glob character (*, ?) exists in the ledger name, compares multiple ledgers
+  and puts all ledger comparisons within a map keyed by each matching ledger.
 
+  Otherwise does a single ledger compare."
+  [ledger data-dirs opts]
+  (if (util/has-glob? ledger)
+    (let [;; consolidate all ledgers across all dirs
+          all-ledgers (reduce #(into %1 (glob-match-ledgers %2 ledger)) (sorted-set) data-dirs)]
+      (reduce (fn [acc ledger]
+                (println "Working on ledger:" ledger)
+                (assoc acc ledger (ledger-compare* ledger data-dirs opts)))
+              (sorted-map) all-ledgers))
+    (ledger-compare* ledger data-dirs opts)))
 
 
 

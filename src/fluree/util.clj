@@ -162,3 +162,29 @@
                {:status 400
                 :error  :db/invalid-arguments})))
     [ledger data-dirs* opts]))
+
+;; adapted from https://gist.github.com/jkk/345785
+(defn glob->regex [s]
+  "Takes a glob-format string and returns a regex."
+  (let [stream (java.io.StringReader. s)]
+    (loop [i (.read stream)
+           re ""
+           curly-depth 0]
+      (if (= i -1)
+        (re-pattern re)
+        (let [c (char i)
+              j (.read stream)]
+          (cond
+            (= c \\) (recur (.read stream) (str re c (char j)) curly-depth)
+            (= c \*) (recur j (str re ".*") curly-depth)
+            (= c \?) (recur j (str re \.) curly-depth)
+            (= c \{) (recur j (str re \() (inc curly-depth))
+            (= c \}) (recur j (str re \)) (dec curly-depth))
+            (and (= c \,) (< 0 curly-depth)) (recur j (str re \|) curly-depth)
+            (#{\. \( \) \| \+ \^ \$ \@ \%} c) (recur j (str re \\ c) curly-depth)
+            :else (recur j (str re c) curly-depth)))))))
+
+(defn has-glob?
+  "Returns true if the string has either a '*' or '?' located in it."
+  [s]
+  (re-matches #"^.*[\*\?].*$" s))
