@@ -375,13 +375,6 @@
   (do (swap! raft-state dissoc :loaded)
       (update-state-to-commit raft-state config-atom)))
 
-(comment
-  (def st-atom (atom {:loaded false}))
-  (swap! st-atom dissoc :loaded)
-  @st-atom
-
-  )
-
 (defn ensure-raft-state-loaded
   [raft-state config-atom]
   (when (false? (:loaded @raft-state)) (get-raft-state raft-state config-atom)))
@@ -487,26 +480,12 @@
         blocks    (-> (raft-log/all-log-indexes block-dir "fdbd") set)]
     (blocks block)))
 
-(comment
-
-  (ledger-raft-info 4 nil)
-  (raft-log/latest-log-index "/Users/plogian/fluree/fluree.db.transactor/data/ledger/fluree/new/root/" "fdbd")
-
-  (def log-entries (raft-log/read-log-file (io/file "/Users/plogian/Downloads/fluree-cli-test/data/group/0.raft")))
-
-  (count log-entries)
-
-  log-entries
-  (raft-log/append)
-
-  )
-
 (defn ledger-api
   "All possible commands: `get`, `ls`, `remember [LEDGER]`, `forget [LEDGER]`, `set-block [LEDGER] [BLOCK]`
 
   `get` and `ls` both list all the ledgers across all networks.
   `remember` and `forget` followed by a ledger name (either as `network ledger` or `network/ledger`) remember or forget a ledger, respectively. When remembering a ledger, we check the latest block in the block folder, and we set the block number accordingly. To set the ledger to a different block, use `set-block` (below).
-  `set-block [NW/LEDGER or NW LEDGER] [BLOCK]` sets the latest block for a ledger. For example, `set-block fluree test 3`"
+  `set-block LEDGER BLOCK` sets the latest block for a ledger. For example, `set-block fluree/test 3`"
   [raft-state config-atom]
   (fn ([]
        (do (ensure-raft-state-loaded raft-state config-atom)
@@ -574,7 +553,7 @@
                                                       (ledger-raft-info block' index-point)])
                                (ledger-info raft-state config-atom [nw ledger])))
 
-                         (throw (ex-info (str "When setting a block, must provided a network, ledger, and block. i.e. `ledger set-block mytest db 2` or `ledger set-block mytest/db 2`")
+                         (throw (ex-info (str "When setting a block, provide a ledger and block. i.e. `ledger set-block mytest/db 2`")
                                          {:status 400
                                           :error  :invalid-command}))))))))
 

@@ -50,11 +50,11 @@
                                     :ledger         {:fn              (raft/ledger-api raft-state config-atom)
                                                      :short-info      "View and update ledger info. Including forgetting and remembering ledgers, and setting ledger blocks."
                                                      :long-info       "`get` and `ls` both list all the ledgers across all networks.
-                                                    `info [NW/LEDGER or NW LEDGER]` to get the ledger info from raft-state.
+                                                    `info LEDGER` to get the ledger info from raft-state.
 
                                                   `remember` and `forget` followed by a ledger name (either as `network ledger` or `network/ledger`) remember or forget a ledger, respectively. When remembering a ledger, we check the latest block in the block folder, and we set the block number accordingly. To set the ledger to a different block, use `set-block` (below).
-                                                  `set-block [NW/LEDGER or NW LEDGER] [BLOCK]` sets the latest block for a ledger. For example, `set-block fluree test 3`"
-                                                     :completion-hint "`get`, `ls`, `info [LEDGER]`, `remember [LEDGER]`, `forget [LEDGER]`, `set-block [LEDGER] [BLOCK]`"}
+                                                  `set-block LEDGER BLOCK` sets the latest block for a ledger. For example, `set-block fluree/test 3`"
+                                                     :completion-hint "`get`, `ls`, `info LEDGER`, `remember LEDGER`, `forget LEDGER`, `set-block LEDGER BLOCK`"}
                                     :network        {:fn              (fn ([] (do (raft/ensure-raft-state-loaded raft-state config-atom)
                                                                                   (println (str "Networks: "
                                                                                                 (str/join ", " (-> @raft-state :networks keys))))))
@@ -134,7 +134,7 @@
                                                                             (clojure.pprint/pprint report))
                                                                           :done))
                                                      :short-info      "Compares multiple Ledger Server copies of data and points out inconsistencies."
-                                                     :long-info       "`ledger-compare  LEDGER DATA-DIR-1 DATA-DIR-2 [DATA-DIR-N ... optional] [--output-file=myreport.json - optional] [--start=10 - optional] [--end=20 - optional]`
+                                                     :long-info       "`ledger-compare LEDGER DATA-DIR-1 DATA-DIR-2 [DATA-DIR-N ... optional] [--output-file=myreport.json - optional] [--start=10 - optional] [--end=20 - optional]`
                                                      DATA-DIR-* is a list of data directories, at least two must be included to compare. If optional --start=n is provided, examination will start at that block. If --end=n is included it will end at that block."
                                                      :completion-hint "`ledger-compare my/ledger /ledger/data/path1 /ledger/data/path2 /ledger/data/path3`"}}
                     :allow-eval    false

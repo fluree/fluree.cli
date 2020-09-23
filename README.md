@@ -71,7 +71,7 @@ This will return a map with the following keys: `block`, `t`, and `flakes`.
 
 This command returns the auth and authority subject ids for a given block or block range. The template for this command is:
 
-`auth LEDGER-NAME [START BLOCK] [END BLOCK - optional]`
+`auth LEDGER-NAME START-BLOCK [END BLOCK - optional]`
                                                                
 Results returned as a map where the keys are the blocks, and the values are a map containing `auth` and `authority`.
 
@@ -127,6 +127,32 @@ For example, the command `verify-blocks fluree test 1 5` may return:
 
 For each block, the keys in the block map are `prevHash`, `hash`, `signature`, `prevHashMatch?`, `hashValid?`, `sigValid?`.
 
+### tx-report
+
+This command provides a detailed report that analyzes all transactions across specified blocks. The template for this command is:
+
+`tx-report LEDGER-NAME [START-BLOCK - optional] [END-BLOCK - optional]  [--data-dir=some/path/ - optional] [--output-file=myreport.json - optional]`
+
+If no blocks are provided, all blocks that can be found on disk will be analyzed. If start and/or end blocks are provided the analysis will start or end at the specified block (inclusive).
+
+The command will use the configured data-dir (type `config` to view or set default data directory). Optionally a data directory can be provided with the command using `--data-dir=/path/to/my/data/directory/`.
+
+The output is returned to the console. Optionally it can be saved to a JSON file on disk by providing `--output-file=myreport.json`.
+
+### ledger-compare
+
+This command analyzes multiple data directories for multiple ledger servers that were used in a raft network to help find any inconsistencies. The template for this command is:
+
+`ledger-compare LEDGER-GLOB DATA-DIR-1 DATA-DIR-2 [DATA-DIR-N ... optional] [--output-file=myreport.json - optional] [--start=10 - optional] [--end=20 - optional]`
+
+Multiple ledgers can be compared by using glob characters `*` or `?`. For example `ledger-compare nw/* /tmp/ledger_1/data/ /tmp/ledger_2/data/ /tmp/ledger_3/data/` would produce a report for all ledgers starting with `nw/`. A `*` alone would produce the analysis for all ledgers.
+
+The range of blocks analyzed can be narrowed by using the optional `--start=10 --end=42` which would only examine blocks 10 through 42 inclusive.
+
+The output is returned to the console. Optionally it can be saved to a JSON file on disk by providing `--output-file=myreport.json`.
+
+Output is a map/object with block numbers as keys where discrepencies occured. An empty map/object output of `{}` indicates there were zero discrepencies found. To see output of ledger data regardless of discrepencies, use the `tx-report` command, which this command leverages for its comparisons.
+
 ## Group Commands
 
 ### raft-state
@@ -143,9 +169,9 @@ The command `raft-state` or `raft-state get` will return the current group-state
 
 `ledger`, `ledger get` and `ledger ls` both list all the ledgers across all networks. This may return, for example, `Ledgers: fluree/test, new/one`.
 
-`ledger info [NW/LEDGER or NW LEDGER]` gets all the ledger info from raft-state, including most recent block and most recent index. For example, you could issue `ledger info fluree test`, and that might return `Ledger info for fluree/test: {:status :ready, :block 4, :index 1, :indexes {1 1580497770328}}`. 
+`ledger info LEDGER` gets all the ledger info from raft-state, including most recent block and most recent index. For example, you could issue `ledger info fluree/test`, and that might return `Ledger info for fluree/test: {:status :ready, :block 4, :index 1, :indexes {1 1580497770328}}`. 
 
- `ledger remember` and `ledger forget` followed by a ledger name (either as `network ledger` or `network/ledger`) remember or forget a ledger, respectively. Make sure that you are running Fluree centralized (as a single server), and that the Fluree node is turned * off *. 
+ `ledger remember` and `ledger forget` followed by a ledger name remember or forget a ledger, respectively. Make sure that you are running Fluree centralized (as a single server), and that the Fluree node is turned * off *. 
  
 There are two components to the file system in a Fluree ledger:
 
@@ -156,9 +182,9 @@ There are two components to the file system in a Fluree ledger:
 
 When you are forgetting a ledger, you are removing that database from the group state (the RAFT state in this case). You are not deleting the actual ledger files, such as a block files and index files. This means, that even after you forget a ledger, you can still remember that ledger later, copy the files and remember it in on a different network, or even just keep it as a historical record, without making updates to it later. 
 
-The template for forgetting a ledger is `ledger forget [NW/LEDGER or NW LEDGER]` 
+The template for forgetting a ledger is `ledger forget LEDGER` 
 
-For example, to forget the ledger `fluree/test`, you can either issue `ledger forget fluree/test` or `ledger forget fluree test`, 
+For example, to forget the ledger `fluree/test`, you would issue `ledger forget fluree/test`.
   
 #### Remembering a Ledger
 
@@ -168,7 +194,7 @@ When remembering a ledger, you must have that ledger's block and index files in 
 
 When we remember a ledger, we check the latest block in the block folder, and we set the block number accordingly. To set the ledger to a different block (including a valid index point at that block), use `set-block`.
 
-`set-block [NW/LEDGER or NW LEDGER] [BLOCK]` sets the latest block for a ledger. For example, `set-block fluree test 3`.
+`set-block LEDGER BLOCK` sets the latest block for a ledger. For example, `set-block fluree/test 3`.
 
 This command will fail if the block files do not exist.
 
@@ -176,7 +202,7 @@ If the block files do not exist, but there are no indexes that are valid for thi
 
 ### Network
 
-This command takes no arguments. `network` or `network ls` or `network get` all list the networks that are known by the Raft state. 
+This command takes no arguments. `network` or `network ls` or `network get` all list the networks that are known by the Raft state. A network is what you see in the namespace portion of a ledger name, i.e. `my/ledger` is in the `my` network.
 
 ### Version
 
