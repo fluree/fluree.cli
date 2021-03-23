@@ -136,7 +136,18 @@
                                                      :short-info      "Compares multiple Ledger Server copies of data and points out inconsistencies."
                                                      :long-info       "`ledger-compare LEDGER DATA-DIR-1 DATA-DIR-2 [DATA-DIR-N ... optional] [--output-file=myreport.json - optional] [--start=10 - optional] [--end=20 - optional]`
                                                      DATA-DIR-* is a list of data directories, at least two must be included to compare. If optional --start=n is provided, examination will start at that block. If --end=n is included it will end at that block."
-                                                     :completion-hint "`ledger-compare my/ledger /ledger/data/path1 /ledger/data/path2 /ledger/data/path3`"}}
+                                                     :completion-hint "`ledger-compare my/ledger /ledger/data/path1 /ledger/data/path2 /ledger/data/path3`"}
+                                    :ledger-repair {:fn              (fn [& args]
+                                                                       (let [[ledger data-dirs opts] (util/parse-ledger-compare-args args)
+                                                                             report (ledger/ledger-repair ledger data-dirs opts)]
+                                                                         (if-let [output-file (:output-file opts)]
+                                                                           (spit output-file (cjson/encode report))
+                                                                           (clojure.pprint/pprint report))
+                                                                         :done))
+                                                    :short-info      "Aggregates a single repaired ledger from multiple ledger directories across multiple ledger servers, if possible."
+                                                    :long-info       "`ledger-repair LEDGER DATA-DIR-1 DATA-DIR-2 [DATA-DIR-N ... optional] [--repair-dir=repaired/ledger - optional] [--output-file=myreport.json - optional]`
+                                                     DATA-DIR-* is a list of data directories, at least two must be included to compare."
+                                                    :completion-hint "`ledger-repair my/ledger /ledger/data/path1 /ledger/data/path2 /ledger/data/path3 --repair-dir=repaired/ledger`"}}
                     :allow-eval    false
                     :prompt-string "fluree✶ "})))
 

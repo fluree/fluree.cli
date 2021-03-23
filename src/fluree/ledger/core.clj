@@ -101,9 +101,14 @@
     (avro/decode FdbBlock-schema
                  (read-file (io/file file-path)))))
 
+(defn block-filename
+  "Returns a formatted filename for a block integer"
+  [block]
+  (str (format "%015d" block) ".fdbd"))
+
 (defn ledger-block-path*
   [ledger block]
-  (str ledger "/block/" (format "%015d" block) ".fdbd"))
+  (str ledger "/block/" (block-filename block)))
 
 (defn read-block
   [data-dir ledger int]
@@ -382,6 +387,112 @@
                 (assoc acc ledger (ledger-compare* ledger data-dirs opts)))
               (sorted-map) all-ledgers))
     (ledger-compare* ledger data-dirs opts)))
+
+
+(defn copy-block
+  [ledger data-dir repair-dir block]
+  (let [blockfile   (block-filename block)
+        source      (io/file data-dir ledger "block" blockfile)
+        destination (io/file repair-dir ledger "block" blockfile)]
+    (io/make-parents destination)
+    (io/copy source destination)))
+
+
+(defn ledger-repair
+  "For use with multiple ledger data-directories (that must be saved locally) which might have an inconsistency.
+  Creates a new ledger directory (at :repair-dir option, or defaults to repaired/ledger) with all of the complete
+  block files, and produces a report at the end as to what was repaired/ignored.
+
+  If it is unable to have a consistent ledger directory, will throw.
+
+  This will not copy over index files. If there is a complete ledger (final report will provide this info)
+  the index files (and block files) can be used from that ledger. If there is not a complete ledger and it
+  must be pieced together from the multiple ledger directories, you will need to re-index.
+
+  Provide:
+  - ledger - ledger name, i.e. my/ledger
+  - data-dirs - list of the data directories of the ledger servers to compare
+  - opts - currently only :repair-dir, which is the location to put the repaired ledger block files."
+  [ledger data-dirs opts]
+  (let [ledger-compare-report (ledger-compare* ledger data-dirs nil)
+        {:keys [repair-dir] :or {repair-dir "repaired/ledger/"}} opts
+        max-block             (apply max (map #(max-block-from-disk % ledger) data-dirs))
+        blocks                (range 1 (inc max-block))
+        ledger-stats          (atom (reduce #(assoc-in %1 [:good %2] 0) {} data-dirs))
+        ledger-stats-update   (fn [ledgers]
+                                (swap! ledger-stats
+                                       (fn [stats]
+                                         (reduce #(update-in %1 [:good %2] inc) stats ledgers))))
+        ledger-stats-errors   (fn [block error ledgers]
+                                (swap! ledger-stats
+                                       (fn [stats]
+                                         (reduce #(assoc-in %1 [:bad %2 block] error) stats ledgers))))]
+    (doseq [block blocks]
+      (let [block-info (get ledger-compare-report block)]
+        (cond
+          ;; no errors reported, can copy over ledger from any directory
+          (nil? block-info)
+          (do
+            (copy-block ledger (first data-dirs) repair-dir block)
+            (ledger-stats-update data-dirs))
+
+          ;; ledgers differ, if we have two or more that agree we'll use those
+          (:checksum-error block-info)
+          (let [ledger-checksums      (:checksum-error block-info)
+                checksum-counts       (reduce-kv (fn [acc _ checksum] (update acc checksum (fnil inc 0))) {} ledger-checksums)
+                most-common-n         (apply max (vals checksum-counts))
+                checksums-with-max    (keep #(when (= most-common-n (val %)) (key %)) checksum-counts)
+                target-checksum       (first checksums-with-max)
+                ledgers-with-checksum (into #{} (keep #(when (= target-checksum (val %))
+                                                         (key %)) ledger-checksums))]
+            (when (= 1 most-common-n)
+              (throw (ex-info (str "Ledger: " ledger " block: " block " has no common checksums: " ledger-checksums
+                                   "Unable to resolve!") {})))
+            (when (not= 1 (count checksums-with-max))
+              (throw (ex-info (str "Ledger: " ledger " block: " block " has multiple checksum conflicts: " ledger-checksums
+                                   "Unable to resolve!") {})))
+            ;; found a common checksum, copying
+            (println ledger "block" block "checksum-match with" most-common-n "ledgers, copying block from:" (first ledgers-with-checksum))
+            (copy-block ledger (first ledgers-with-checksum) repair-dir block)
+            (ledger-stats-update ledgers-with-checksum)
+            (ledger-stats-errors block :checksum-error (filter #(not (ledgers-with-checksum %)) data-dirs)))
+
+          ;; block 't' value likely missing, see if a ledger has no warning for this block
+          (:warnings block-info)
+          (let [ledger-warning-info      (:warnings block-info)
+                ledger-with-warnings     (into #{} (keys ledger-warning-info))
+                ledgers-without-warnings (filter #(not (ledger-with-warnings %1)) data-dirs)]
+            (when (empty? ledgers-without-warnings)
+              (throw (ex-info (str "Ledger: " ledger " block: " block " has no ledgers without issues: " ledger-warning-info
+                                   "Unable to resolve!") {})))
+            (println ledger "block" block "warnings for all but" (count ledgers-without-warnings) "ledgers, copying block from:"
+                     (first ledgers-without-warnings) "Warnings:" ledger-warning-info)
+            (copy-block ledger (first ledgers-without-warnings) repair-dir block)
+            (ledger-stats-update ledgers-without-warnings)
+            (doseq [ledger ledger-with-warnings]
+              (ledger-stats-errors block (get ledger-warning-info ledger) [ledger])))
+
+          ;; block is missing in one or more ledgers
+          (:missing-in block-info)
+          (let [missing-in     (:missing-in block-info)
+                not-missing-in (filter #(not (missing-in %)) data-dirs)]
+            (when (empty? not-missing-in)
+              (throw (ex-info (str "Ledger: " ledger " block: " block " has no ledgers with block: " block
+                                   "Unable to resolve!") {})))
+            (println ledger "block" block "missing in ledgers" missing-in ". Copying from:" (first not-missing-in))
+            (copy-block ledger (first not-missing-in) repair-dir block)
+            (ledger-stats-update not-missing-in)
+            (ledger-stats-errors block :missing missing-in))
+
+
+          :else
+          (throw (ex-info (str "Ledger: " ledger " block: " block " Unexpected Error!: " block-info) {})))))
+    (let [good-blocks  (get @ledger-stats :good)
+          good-ledgers (filter #(= max-block (get good-blocks %1)) data-dirs)]
+      (if (empty? good-ledgers)
+        (println ">>>> No Ledger was complete!!!!")
+        (println ">>>> Ledger(s)" good-ledgers "were complete!"))
+      @ledger-stats)))
 
 
 

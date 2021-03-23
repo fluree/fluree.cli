@@ -151,13 +151,23 @@ The range of blocks analyzed can be narrowed by using the optional `--start=10 -
 
 The output is returned to the console. Optionally it can be saved to a JSON file on disk by providing `--output-file=myreport.json`.
 
-Output is a map/object with block numbers as keys where discrepencies occured. An empty map/object output of `{}` indicates there were zero discrepencies found. To see output of ledger data regardless of discrepencies, use the `tx-report` command, which this command leverages for its comparisons.
+Output is a map/object with block numbers as keys where discrepancies occurred. An empty map/object output of `{}` indicates there were zero discrepancies found. To see output of ledger data regardless of discrepancies, use the `tx-report` command, which this command leverages for its comparisons.
+
+### ledger-repair
+
+This command analyzes multiple data directories for multiple ledger servers that were used in a raft network, and creates a single repaired ledger directory containing consistent blocks, or will throw if a repaired ledger cannot be automatically created:
+
+`ledger-repair LEDGER-NAME DATA-DIR-1 DATA-DIR-2 [DATA-DIR-N ... optional] [--repair-dir=repaired/ledger - optional] [--output-file=myreport.json - optional]`
+
+A report outlining how many consistent blocks from each directory, along with inconsistencies is provided after process is complete. Optionally it can be saved to a JSON file on disk by providing `--output-file=myreport.json`.
+
+Assuming the repair was successful, the repaired, consistent blocks will be located in the --repair-dir (./repaired/ledger by default).
 
 ## Group Commands
 
 ### raft-state
 
-The command `raft-state` or `raft-state get` will return the current group-state. The `raft-state` is retrieved from the configured log directory. First, the most recent non-corrupted snapshot is retrieved. Then all of the logs from the snapshot forward are applied to the state. If a raft state cannot be retrieved, there will be an error message to guide you to correct the issue. See `Scenarios` for more information on specific scenarios that may occur. 
+The command `raft-state` or `raft-state get` will return the current group-state. The `raft-state` is retrieved from the configured log directory. First, the most recent non-corrupted snapshot is retrieved. Then all logs from the snapshot forward are applied to state. If a raft state cannot be retrieved, there will be an error message to guide you to correct the issue. See `Scenarios` for more information on specific scenarios that may occur. 
 
 `raft-state keys` returns all the keys of the current group state. For example, this will return a sequence like `(:version :leases :private-key :networks :new-db-queue :_work :_worker :cmd-queue)`. 
 
@@ -171,7 +181,7 @@ The command `raft-state` or `raft-state get` will return the current group-state
 
 `ledger info LEDGER` gets all the ledger info from raft-state, including most recent block and most recent index. For example, you could issue `ledger info fluree/test`, and that might return `Ledger info for fluree/test: {:status :ready, :block 4, :index 1, :indexes {1 1580497770328}}`. 
 
- `ledger remember` and `ledger forget` followed by a ledger name remember or forget a ledger, respectively. Make sure that you are running Fluree centralized (as a single server), and that the Fluree node is turned * off *. 
+ `ledger remember` and `ledger forget` followed by a ledger name remember or forget a ledger, respectively. Make sure you are running Fluree centralized (as a single server), and that the Fluree node is turned * off *. 
  
 There are two components to the file system in a Fluree ledger:
 
@@ -212,6 +222,6 @@ Only set the data version in the Raft state if you know what you are doing. Make
 
 ### Private Key
 
-`private-key get` retrieves the default private key from the Raft state. This is a equivalent to `raft-state private-key`.
+`private-key get` retrieves the default private key from the Raft state. This is equivalent to `raft-state private-key`.
 
- Make sure you running Fluree centralized (as a single server), and make sure that your Fluree node is NOT running. Then you can issue `private-key set [HEX-ENCODED PRIVATE KEY]`, for example `private-key set 745f3040cbfba59ba158fc4ab295d95eb4596666c4c275380491ac658cf8b60c`. This will change the default private key used to sign transactions. Before changing the default private key, make sure that the auth record associated with this private key is valid and has roles in the database (see the [Identity section](https://docs.flur.ee/docs/identity) in the docs for more information).
+ Make sure you running Fluree centralized (as a single server), and make sure your Fluree node is NOT running. Then you can issue `private-key set [HEX-ENCODED PRIVATE KEY]`, for example `private-key set 745f3040cbfba59ba158fc4ab295d95eb4596666c4c275380491ac658cf8b60c`. This will change the default private key used to sign transactions. Before changing the default private key, make sure that the auth record associated with this private key is valid and has roles in the database (see the [Identity section](https://docs.flur.ee/docs/identity) in the docs for more information).
