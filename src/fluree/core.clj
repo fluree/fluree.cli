@@ -147,7 +147,7 @@
                                                     :short-info      "Aggregates a single repaired ledger from multiple ledger directories across multiple ledger servers, if possible."
                                                     :long-info       "`ledger-repair LEDGER DATA-DIR-1 DATA-DIR-2 [DATA-DIR-N ... optional] [--repair-dir=repaired/ledger - optional] [--output-file=myreport.json - optional]`
                                                      DATA-DIR-* is a list of data directories, at least two must be included to compare."
-                                                    :completion-hint "`ledger-compare my/ledger /ledger/data/path1 /ledger/data/path2 /ledger/data/path3 --repair-dir=repaired/ledger`"}}
+                                                    :completion-hint "`ledger-repair my/ledger /ledger/data/path1 /ledger/data/path2 /ledger/data/path3 --repair-dir=repaired/ledger`"}}
                     :allow-eval    false
                     :prompt-string "fluree✶ "})))
 
