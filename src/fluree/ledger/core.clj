@@ -403,21 +403,6 @@
     (Files/copy src-path dest-path (into-array CopyOption [StandardCopyOption/REPLACE_EXISTING]))))
 
 
-;
-;(defn copy-dir-visitor [from to]
-;  (proxy [SimpleFileVisitor] []
-;    (preVisitDirectory [dir attrs]
-;      (let [target (.resolve to (.relativize from dir))]
-;        (if-not (Files/exists target (into-array LinkOption []))
-;          (Files/createDirectory target (into-array FileAttribute [])))
-;        FileVisitResult/CONTINUE))
-;    (visitFile [file attrs]
-;      (let [target (.resolve to (.relativize from file))]
-;        (Files/copy file target (into-array CopyOption [StandardCopyOption/REPLACE_EXISTING])))
-;      FileVisitResult/CONTINUE)))
-;
-;#_(Files/copy src-path dest-path (into-array CopyOption []))))
-
 (defn copy-block
   [ledger data-dir repair-dir block]
   (let [blockfile   (block-filename block)

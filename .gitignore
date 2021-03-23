@@ -12,4 +12,3 @@ pom.xml.asc
 .idea
 build.sh
 build
-fluree.cli.iml
