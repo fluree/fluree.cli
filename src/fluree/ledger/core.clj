@@ -10,9 +10,7 @@
             [clojure.set :as set])
   (:import (java.io ByteArrayOutputStream)
            (java.util UUID)
-           (java.net URI)
-           (java.nio.file Files Path Paths StandardCopyOption CopyOption LinkOption)
-           (java.nio.file.attribute FileAttribute)))
+           (java.net URI)))
 
 (def avro-bigint
   (avro/parse-schema
@@ -389,18 +387,6 @@
                 (assoc acc ledger (ledger-compare* ledger data-dirs opts)))
               (sorted-map) all-ledgers))
     (ledger-compare* ledger data-dirs opts)))
-
-
-(defn copy-block
-  [ledger data-dir repair-dir block]
-  (let [blockfile   (block-filename block)
-        src-path    ^Path (Paths/get data-dir (into-array [ledger "block" blockfile]))
-        dest-path   ^Path (Paths/get repair-dir (into-array [ledger "block" blockfile]))
-        dest-dir    (Paths/get repair-dir (into-array [ledger "block"]))
-        dir-exists? (Files/exists dest-dir (into-array LinkOption []))]
-    (when-not dir-exists?
-      (Files/createDirectories dest-dir (into-array FileAttribute [])))
-    (Files/copy src-path dest-path (into-array CopyOption [StandardCopyOption/REPLACE_EXISTING]))))
 
 
 (defn copy-block
