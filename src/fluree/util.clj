@@ -112,8 +112,10 @@
                                       :else
                                       (try (Integer/parseInt v) ;; parse to integer if possible
                                            (catch Exception _ v)))]
-                             (assoc acc k* v*))) {} opts)]
-    [opts-map args*]))
+                             (assoc acc k* v*))) {} opts)
+        ;; parse any args possible into integers
+        args**   (map #(try (Integer/parseInt %) (catch Exception _ %)) args*)]
+    [opts-map args**]))
 
 (defn get-input
   [varname value]
@@ -135,8 +137,7 @@
         [ledger start-block end-block-or-meta] args*]
     (when-not (ledger-name? ledger)
       (throw (ex-info
-               (str "Invalid ledger provided. Expected `ledger-network/ledger-id`. Provided: "
-                    (str/join " " args))
+               (str "Invalid ledger provided. Expected `ledger-network/ledger-id`. Provided: " ledger)
                {:status 400
                 :error  :db/invalid-arguments})))
     (when-not data-dir*
@@ -167,8 +168,8 @@
 (defn glob->regex [s]
   "Takes a glob-format string and returns a regex."
   (let [stream (java.io.StringReader. s)]
-    (loop [i (.read stream)
-           re ""
+    (loop [i           (.read stream)
+           re          ""
            curly-depth 0]
       (if (= i -1)
         (re-pattern re)

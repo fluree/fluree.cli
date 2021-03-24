@@ -112,6 +112,7 @@
 
 (defn read-block
   [data-dir ledger int]
+  (assert (int? int) (str "Read-block needs an integer block number, sent: " int " of type: " (type int)))
   (let [block-path (str data-dir (ledger-block-path* ledger int))
         file-bytes (read-file (io/file block-path))
         block-data (binding [avro/*avro-readers* bindings]
