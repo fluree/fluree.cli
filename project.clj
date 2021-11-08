@@ -7,7 +7,7 @@
                  [cheshire "5.10.0"]
                  [com.fluree/raft "1.0.0-beta1"]
                  [com.fluree/crypto "0.3.5" :exclusions [org.clojure/clojurescript]]
-                 [cli4clj "1.7.6" :exclusions [org.clojure/core.async]]
+                 [cli4clj "1.7.10" :exclusions [org.clojure/core.async]]
                  [clj-figlet "0.1.1"]
                  [com.damballa/abracad "0.4.13"]]
   :main fluree.core
