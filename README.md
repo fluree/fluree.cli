@@ -40,10 +40,6 @@ Group commands deal with reading and manipulating consensus logs. Currently only
 
 There is also a `config` command, which allows you to view and change some configuration details:
 
-**usage note**
-
-If the ledger name has a numeric network name (e.g 12345/ledger1), you need to add quotes around it: `"12345/ledger1"`.
-
 ### config
 
 
